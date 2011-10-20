@@ -19,7 +19,7 @@ module FactoryGirl
       @compiled         = false
     end
 
-    delegate :overridable?, :declarations, :declare_attribute, :define_attribute, :add_callback, :to => :@attribute_list
+    delegate :overridable?, :compile_declarations, :declare_attribute, :add_callback, :to => :@attribute_list
 
     def factory_name
       $stderr.puts "DEPRECATION WARNING: factory.factory_name is deprecated; use factory.name instead."
@@ -141,12 +141,7 @@ module FactoryGirl
 
     def compile
       inherit_factory(parent) if parent
-
-      declarations.each do |declaration|
-        declaration.to_attributes.each do |attribute|
-          define_attribute(attribute)
-        end
-      end
+      compile_declarations
 
       @compiled = true
     end

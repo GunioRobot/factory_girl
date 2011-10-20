@@ -17,13 +17,12 @@ module FactoryGirl
       declaration
     end
 
-    def define_attribute(attribute)
-      if attribute.respond_to?(:factory) && attribute.factory == @name
-        raise AssociationDefinitionError, "Self-referencing association '#{attribute.name}' in '#{attribute.factory}'"
+    def compile_declarations
+      declarations.each do |declaration|
+        declaration.to_attributes.each do |attribute|
+          define_attribute(attribute)
+        end
       end
-
-      ensure_attribute_not_defined! attribute
-      add_attribute attribute
     end
 
     def add_callback(callback)
@@ -65,6 +64,15 @@ module FactoryGirl
     end
 
     private
+
+    def define_attribute(attribute)
+      if attribute.respond_to?(:factory) && attribute.factory == @name
+        raise AssociationDefinitionError, "Self-referencing association '#{attribute.name}' in '#{attribute.factory}'"
+      end
+
+      ensure_attribute_not_defined! attribute
+      add_attribute attribute
+    end
 
     def add_attribute(attribute)
       delete_attribute(attribute.name) if overridable?
